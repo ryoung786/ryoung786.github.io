@@ -1,0 +1,17 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <p>Hello Chess.</p>
+  </body>
+  <script src="../assets/js/lib/require.js"></script>
+  <script>
+      require.config({
+          baseUrl: '../assets/js',
+          paths: {
+              jquery: 'lib/jquery'
+          }
+      });
+  </script>
+  <script>require(['chess']);</script>
+</html>
