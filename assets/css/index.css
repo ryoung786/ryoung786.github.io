@@ -10,7 +10,7 @@ body {
 
 .header {
   background-color: #5a5654;
-  padding: 20px 15px;
+  padding: 20px 30px;
 }
 
   .header h1 {
@@ -19,7 +19,7 @@ body {
   }
 
 .content {
-  padding: 20px 15px;
+  padding: 20px 30px;
 }
 
   .content h3 {
