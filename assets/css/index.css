@@ -37,6 +37,10 @@ body {
     text-decoration: none;
   }
 
+  .content .marathons th.first {
+    text-align: left;
+  }
+
   .content .marathons th {
     font-weight: normal;
   }
