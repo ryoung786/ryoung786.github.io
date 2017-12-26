@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta name="viewport" content="width=device-width, minimum-scale=0.1">
+	<title>Learns</title>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,400" rel="stylesheet" type="text/css">
+	<link href="assets/css/learns.css" rel="stylesheet" type="text/css">
+    </head>
+
+    <body class="transition-background-color">
+	<div id="loading">
+            <p>Retrieving learns</p>
+            <div class="spinner"></div>
+	</div>
+	<p id="quote"></p>
+	<img id="image" />
+	<div id="attribution"><span /></div>
+    </body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="lib/learns.js"></script>
+
+    <script>
+     const randomize = 1;
+     const timer = 8000; // milliseconds
+     const learns = data;
+     const LearnType = { QUOTE: "QUOTE", IMAGE: "IMAGE"};
+     const COLORS = ["#C13C27", "#FFAC8F", "#EAC1BE", "#F2D0B8", "#FBEAD8", "#FFAC62", "#FECF84", "#FF883E", "#FFA300"];
+     const DARK_COLORS = ["#C13C27"];
+
+     var current_color = COLORS[0];
+     var current_learn_index = 113;
+     var interval;
+
+     function getNextColor() {
+         var new_color;
+         for (var i=0; i<1000; i++) {
+	     new_color = COLORS[Math.floor(Math.random() * COLORS.length)];
+	     if (new_color !== current_color) break;
+         }
+         current_color = new_color;
+         return new_color;
+     }
+
+     function getNextLearnObject() {
+         if (learns.length === 0) return null;
+         if (learns.length === 1) {
+	     current_learn_index = 0;
+	     return learns[0];
+         }
+         if (randomize) {
+	     var new_index;
+	     for (var i=0; i<1000; i++) {
+                 new_index = Math.floor(Math.random() * learns.length);
+                 if (new_index !== current_learn_index) break;
+	     }
+	     current_learn_index = new_index;
+         } else {
+	     current_learn_index++;
+	     if (current_learn_index >= learns.length) {
+                 current_learn_index = 0;
+	     }
+         }
+         return learns[current_learn_index];
+     }
+
+     function getLearnType(content) {
+         content = content.toLowerCase().trim();
+         return (!content.startsWith("http") || content.indexOf(" ") !== -1)
+	      ? LearnType.QUOTE
+	      : LearnType.IMAGE;
+     }
+
+     function nextLearn() {
+         transitionOutCurrentLearn();
+         setTimeout(transitionInNextColor, 600);
+         setTimeout(transitionInNextLearn, 650);
+     }
+
+     function noLearnsFound() {
+         transitionOutCurrentLearn();
+         setTimeout(transitionInNextColor, 600);
+         setTimeout(function() {
+	     var transition = {
+                 transition: "opacity 2s cubic-bezier(0.55, 0.085, 0.68, 0.53), transform 2s cubic-bezier(0.165, 0.84, 0.44, 1)"
+	     }
+	     $("#quote").css("transform", "translate3d(0,2em,0)");
+	     $("#quote").text(str).css(transition).show();
+	     setTimeout(function() {
+                 $("#quote").css({
+		     opacity: 1,
+		     transform: "translate3d(0,-1em,0)"
+                 });
+	     }, 50);
+         }, 650);
+     }
+
+     function transitionInNextColor() {
+         var color = getNextColor();
+         $("body").css("background-color", color);
+         if (DARK_COLORS.indexOf(color) === -1) {
+	     $("#quote").addClass("dark");
+         } else {
+	     $("#quote").removeClass("dark");
+         }
+     }
+
+     function transitionOutCurrentLearn() {
+         $("#loading, #quote, #image, #attribution").css({
+	     transition: "all 600ms cubic-bezier(0.55, 0.085, 0.68, 0.53)",
+	     opacity: 0
+         });
+         $("#loading").css("transform", "translate3d(0,-2em,0)");
+         $("#quote").css("transform", "translate3d(0,-3em,0)");
+         setTimeout(function() {
+	     $("#loading").remove();
+	     $("#quote, #image").hide();
+	     $("#image").attr("src", null);
+	     $("#quote").css("transition", null);
+         }, 600);
+     }
+
+     function transitionInNextLearn() {
+         var learn = getNextLearnObject();
+         var type = getLearnType(learn.content);
+         var transition = {
+	     transition: "opacity 2s cubic-bezier(0.55, 0.085, 0.68, 0.53), transform 2s cubic-bezier(0.165, 0.84, 0.44, 1)"
+         }
+         $("#quote").css("transform", "translate3d(0,2em,0)");
+         $("#attribution").css(transition);
+         $("#attribution span").text(learn.who_learned);
+         if (type === LearnType.QUOTE) {
+	     $("#quote").text(learn.content).css(transition).show();
+	     setTimeout(function() {
+                 $("#quote").css({
+		     opacity: 1,
+		     transform: "translate3d(0,-1em,0)"
+                 });
+                 $("#attribution").css("opacity", 1);
+	     }, 50);
+         } else {
+	     $("#image").attr("src", learn.content).css(transition).show();
+	     setTimeout(function() {
+                 $("#image, #attribution").css("opacity", 1);
+	     }, 50);
+         }
+     }
+     $('#image').on('error', function(){
+         $(this).hide();
+         learns.splice(current_learn_index, 1);
+         current_learn_index--;
+         if (learns.length < 1) {
+	     noLearnsFound();
+         }
+         nextLearn();
+     });
+     $("body").css("background-color", COLORS[0]);
+     $(function() {
+         $("body").css("background-color", COLORS[0]);
+         $("#loading").css({
+	     transform: "translate3d(0,0,0)",
+	     opacity: 1
+         });
+         // timer is in seconds, setInterval requires milliseconds
+         setTimeout(function() {
+	     if (learns.length > 0) {
+                 if (timer && learns.length > 1) {
+		     interval = setInterval(nextLearn, timer);
+                 }
+                 nextLearn();
+	     } else {
+                 noLearnsFound();
+	     }
+         }, 5000);
+     });
+     $(document).on("click touchStart keydown", function(e) {
+         // go to the next learn
+         // if they touch or click the screen, or press right arrow
+         // but only if we've finished the LOADING intro
+         if (((e.type === "keydown" && e.keyCode === 39)
+           || e.type === "click" || e.type === "touchStart")
+	     && $("#loading").length === 0) {
+	     if (learns.length > 1) {
+                 nextLearn();
+                 if (timer) {
+		     clearInterval(interval)
+		     interval = setInterval(nextLearn, timer);
+                 }
+	     }
+         }
+     });
+    </script>
+</html>
