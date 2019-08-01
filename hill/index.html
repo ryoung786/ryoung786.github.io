@@ -1,0 +1,46 @@
+<html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.13/svg.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.draggable.js@3.0.2/dist/svg.draggable.min.js"></script>
+    
+    
+        <!-- 
+             Approximates .5sin( 2pi/3 (x-.75)) + .5
+        -->
+    <svg id="hill" viewbox="0 0 300 102" style="border:1px solid black" >
+        <path d="M0 51
+                 m0 50
+                 c 53.2 0, 96.8 -100, 150 -100
+                 s 96.8 100, 150 100"
+	      stroke="blue"
+	      stroke-width="2"
+	      fill="transparent" />
+        <path d="M150 0 V102"
+	      stroke="gray"
+	      stroke-width="1"
+	      stroke-dasharray="2,5"
+	      fill="transparent" />
+        <circle class="circle" r="6" cx ="6" cy="100.60573506572389" fill="tomato"
+                stroke="white" stroke-width="2" />
+  </svg>
+  <div id="hix" />
+
+  <script>
+   /*    var draw = SVG('#hill') */
+
+   const radius = 6
+   const sin_stroke_width = 2
+   var circle = SVG.find('.circle')[0]
+   circle.draggable()
+
+   circle.on('dragmove.namespace', (e) => {
+       const {handler, box} = e.detail
+       e.preventDefault()
+       let {x, y} = box
+       if (x <= 0) { x = 0 }
+       if (x+(2*radius) >= 300) { x = 300 - (2*radius) }
+       y = (100 + sin_stroke_width / 2) - (50 * Math.sin((2*Math.PI/300) * ((x+radius) - 75)) + 50) - radius
+       handler.move(x, y)
+   })
+  </script>
+
+</html>
