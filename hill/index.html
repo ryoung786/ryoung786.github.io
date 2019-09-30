@@ -1,4 +1,5 @@
-<html>
+<html style="background:
+              linear-gradient(45deg, lightsalmon, transparent);">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.13/svg.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.draggable.js@3.0.2/dist/svg.draggable.min.js"></script>
 
@@ -51,7 +52,7 @@
    function addCircle() {
      const circle = svg.circle(2*radius).attr({
        fill: nextColor(), stroke: 'white', 'stroke-width': 2,
-       cx: 6, cy: 100.60573506572389
+       cx: 0, cy: 50
      }).draggable().on('dragmove', dragHandler)
                        .on('dragstart', (e) => { e.detail.handler.el.front(); })
    }
